@@ -36,7 +36,7 @@ const getCurrentUser = async (req) => {
   }
 };
 
-/* Get Latest Downloads */
+/* Get User Downloads */
 const getGettyImagesData = async (req, dateFrom, dateTo) => {
   const axiosInstance = await instance(req);
   const params = {
@@ -45,11 +45,33 @@ const getGettyImagesData = async (req, dateFrom, dateTo) => {
   }
   try {
     const response = await axiosInstance.get('/downloads', { params });
-    return response.data;
+    const data = response.data.downloads;
+    //console.table(data);
+    // Create an array to hold the URLs of the downloaded images
+    const downloadedImageUrls = [];
+    // Loop through each item in the response data array
+    for (const item of data) {
+      try {
+        // Get the image ID from the item
+        const imageId = item.id;
+        // Construct the URL for downloading the image with the given ID
+        const downloadUrl = `${GETTY_API_URL}/downloads/images/${imageId}?auto_download=false&use_team_credits=false`;
+        // Make a POST request to the download URL
+        const downloadResponse = await axiosInstance.post(downloadUrl);
+        // Extract the download URI from the response
+        const downloadUri = downloadResponse.data.uri;
+        // Add the download URI to the downloadedImageUrls array
+        downloadedImageUrls.push(downloadUri);
+      } catch (error) {
+        console.error(`Error downloading image with asset ID ${item.asset_id}:`, error.message);
+      }
+    }
+    return { /*data*/ downloadedImageUrls };
   } catch (error) {
     console.error('Error retrieving Getty Images data:', error.message);
     return null;
   }
 };
+
 
 module.exports = { getCurrentUser, getGettyImagesData };
