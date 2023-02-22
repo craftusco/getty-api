@@ -1,4 +1,5 @@
 module.exports = {
-    API_KEY: '624624683124292',
-    API_SECRET: '-DJnHDsCmJhCq48g39Cpjz8KNC0'
+    cloudName: 'european-athletics',
+    apiKey: '624624683124292',
+    apiSecret: '-DJnHDsCmJhCq48g39Cpjz8KNC0'
 };
