@@ -1,0 +1,324 @@
+{
+	"info": {
+		"_postman_id": "fe71bc60-eb89-4389-8113-db5f450d2177",
+		"name": "Upwork - DIRECTUS Cloudinary",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5580700"
+	},
+	"item": [
+		{
+			"name": "index",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "token",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "2A8xFjWUoDFWhN8NVMmOTITZI28G9TpJyF2efM+jRUXizB5WkCIp4wcLxYqVX4JKNIPr82wu99PdyPvQrO4GRl0QPNqCQ3eQw3qzxJxsxtpLV9Djn7437y8GmveIE8bTkjoX5PxPM6EbFsyzOHQ7mLEdyccUbH+LRDHB6eROzdc=|77u/Z0QreTdPYnZWM2kwVkhaR2VMaTQKODY3NTg2MAoyNzAwODAyMwpRdFBVRmc9PQpTdHJVRmc9PQoxCmhleGJjZnJlMnI3eHZzeWU1bmJndHY1NgoxNTEuNjUuMTE4LjIwNwowCjg2NzU4NjAKCjg2NzU4NjAKMAoKCg==|3|2|1",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.gettyimages.com/v3/customers/current",
+					"protocol": "https",
+					"host": [
+						"api",
+						"gettyimages",
+						"com"
+					],
+					"path": [
+						"v3",
+						"customers",
+						"current"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sync",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/sync?from=2023-02-21&to=2023-02-22",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"sync"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "2023-02-21"
+						},
+						{
+							"key": "to",
+							"value": "2023-02-22"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "count",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/count",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"count"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"test"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getty-auth",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "james.mulligan",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "gettysport",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "hexbcfre2r7xvsye5nbgtv56",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "FK9qnjVy7qVHUdCCYE7n",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://api.gettyimages.com/v4/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"api",
+						"gettyimages",
+						"com"
+					],
+					"path": [
+						"v4",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getty-downloads",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{getty_bearer }}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Api-Key",
+						"value": "{{getty_key}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://api.gettyimages.com/v3/downloads/images/1301443885?auto_download=false&use_team_credits=false",
+					"protocol": "https",
+					"host": [
+						"api",
+						"gettyimages",
+						"com"
+					],
+					"path": [
+						"v3",
+						"downloads",
+						"images",
+						"1301443885"
+					],
+					"query": [
+						{
+							"key": "page_size",
+							"value": "30",
+							"disabled": true
+						},
+						{
+							"key": "company_downloads",
+							"value": "false",
+							"disabled": true
+						},
+						{
+							"key": "auto_download",
+							"value": "false"
+						},
+						{
+							"key": "use_team_credits",
+							"value": "false"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getty-download",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{getty_bearer }}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Api-Key",
+						"value": "{{getty_key}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://api.gettyimages.com/v3/downloads/images/1386308350?auto_download=true",
+					"protocol": "https",
+					"host": [
+						"api",
+						"gettyimages",
+						"com"
+					],
+					"path": [
+						"v3",
+						"downloads",
+						"images",
+						"1386308350"
+					],
+					"query": [
+						{
+							"key": "auto_download",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getty-user",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "key",
+							"value": "api-key",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "hexbcfre2r7xvsye5nbgtv56",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Api-Key",
+						"value": "{{getty_key}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://api.gettyimages.com/v3/customers/current",
+					"protocol": "https",
+					"host": [
+						"api",
+						"gettyimages",
+						"com"
+					],
+					"path": [
+						"v3",
+						"customers",
+						"current"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

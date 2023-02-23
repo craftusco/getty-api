@@ -36,37 +36,48 @@ const getCurrentUser = async (req) => {
   }
 };
 
-/* Get User Downloads */
-const getGettyImagesData = async (req, dateFrom, dateTo) => {
+/* Get Count Images and save to DB */
+const getCountImages = async (req, dateFrom, dateTo) => {
   const axiosInstance = await instance(req);
   const params = {
     date_from: dateFrom,
     date_to: dateTo
   }
   try {
+    const response = await axiosInstance.get('/downloads');
+    return response.data.result_count;
+  } catch (error) {
+    console.error('Error retrieving data:', error.message);
+    return null;
+  }
+};
+
+/* Get User Downloads */
+const getGettyImagesData = async (req, dateFrom, dateTo) => {
+  const axiosInstance = await instance(req);
+  const params = {
+    date_from: dateFrom,
+    date_to: dateTo,
+    page_size: 10
+  }
+  try {
     const response = await axiosInstance.get('/downloads', { params });
     const data = response.data.downloads;
-    //console.table(data);
-    // Create an array to hold the URLs of the downloaded images
-    const downloadedImageUrls = [];
-    // Loop through each item in the response data array
-    for (const item of data) {
-      try {
-        // Get the image ID from the item
-        const imageId = item.id;
-        // Construct the URL for downloading the image with the given ID
-        const downloadUrl = `${GETTY_API_URL}/downloads/images/${imageId}?auto_download=false&use_team_credits=false`;
-        // Make a POST request to the download URL
-        const downloadResponse = await axiosInstance.post(downloadUrl);
-        // Extract the download URI from the response
-        const downloadUri = downloadResponse.data.uri;
-        // Add the download URI to the downloadedImageUrls array
-        downloadedImageUrls.push(downloadUri);
-      } catch (error) {
-        console.error(`Error downloading image with asset ID ${item.asset_id}:`, error.message);
-      }
-    }
-    return { /*data*/ downloadedImageUrls };
+    
+    // Create an array of promises for each image download request
+    const downloadPromises = data.map(item => {
+      const imageId = item.id;
+      const downloadUrl = `${GETTY_API_URL}/downloads/images/${imageId}?auto_download=false&use_team_credits=false`;
+      return axiosInstance.post(downloadUrl);
+    });
+
+    // Execute all image download requests together
+    const downloadResponses = await axios.all(downloadPromises);
+
+    // Get the download URIs from the response data
+    const downloadedImageUrls = downloadResponses.map(response => response.data.uri);
+
+    return downloadedImageUrls;
   } catch (error) {
     console.error('Error retrieving Getty Images data:', error.message);
     return null;
@@ -74,4 +85,5 @@ const getGettyImagesData = async (req, dateFrom, dateTo) => {
 };
 
 
-module.exports = { getCurrentUser, getGettyImagesData };
+
+module.exports = { getCurrentUser, getCountImages, getGettyImagesData };
