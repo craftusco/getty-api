@@ -17,7 +17,7 @@ Folder & Files architecture
 
 ## 📦 Installation
 
-DuckMa Console requires [Node.js](https://nodejs.org/) v16.8+ to run.
+[Node.js](https://nodejs.org/) v16.8+ is required to run the microservice.
 
 1. Make sure you have git, node, and npm installed.
 2. Clone this repository locally.
