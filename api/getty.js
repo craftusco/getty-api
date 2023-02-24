@@ -37,12 +37,8 @@ const getCurrentUser = async (req) => {
 };
 
 /* Get Count Images and save to DB */
-const getCountImages = async (req, dateFrom, dateTo) => {
+const getCountImages = async (req) => {
   const axiosInstance = await instance(req);
-  const params = {
-    date_from: dateFrom,
-    date_to: dateTo
-  }
   try {
     const response = await axiosInstance.get('/downloads');
     return response.data.result_count;
@@ -55,33 +51,49 @@ const getCountImages = async (req, dateFrom, dateTo) => {
 /* Get User Downloads */
 const getGettyImagesData = async (req, dateFrom, dateTo) => {
   const axiosInstance = await instance(req);
-  const params = {
-    date_from: dateFrom,
-    date_to: dateTo,
-    page_size: 10
-  }
-  try {
-    const response = await axiosInstance.get('/downloads', { params });
-    const data = response.data.downloads;
+  const pageSize = 30;
+  let pageNumber = 1;
+  let totalData = [];
+  
+  while (true) {
+    const params = {
+      date_from: dateFrom,
+      date_to: dateTo,
+      page_size: pageSize,
+      page_number: pageNumber
+    };
     
-    // Create an array of promises for each image download request
-    const downloadPromises = data.map(item => {
-      const imageId = item.id;
-      const downloadUrl = `${GETTY_API_URL}/downloads/images/${imageId}?auto_download=false&use_team_credits=false`;
-      return axiosInstance.post(downloadUrl);
-    });
-
-    // Execute all image download requests together
-    const downloadResponses = await axios.all(downloadPromises);
-
-    // Get the download URIs from the response data
-    const downloadedImageUrls = downloadResponses.map(response => response.data.uri);
-
-    return downloadedImageUrls;
-  } catch (error) {
-    console.error('Error retrieving Getty Images data:', error.message);
-    return null;
+    try {
+      const response = await axiosInstance.get('/downloads', { params });
+      const data = response.data.downloads;
+      
+      // If there's no data in the response, break out of the loop
+      if (data.length === 0) {
+        break;
+      }
+      
+      totalData = totalData.concat(data);
+      pageNumber++;
+    } catch (error) {
+      console.error('Error retrieving Getty Images data:', error.message);
+      return null;
+    }
   }
+  
+  // Create an array of promises for each image download request
+  const downloadPromises = totalData.map(item => {
+    const imageId = item.id;
+    const downloadUrl = `${GETTY_API_URL}/downloads/images/${imageId}?auto_download=false&use_team_credits=false`;
+    return axiosInstance.post(downloadUrl);
+  });
+
+  // Execute all image download requests together
+  const downloadResponses = await axios.all(downloadPromises);
+
+  // Get the download URIs from the response data
+  const downloadedImageUrls = downloadResponses.map(response => response.data.uri);
+
+  return downloadedImageUrls;
 };
 
 

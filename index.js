@@ -1,5 +1,8 @@
 const express = require('express');
 const session = require('express-session');
+const axios = require('axios');
+const { Readable } = require('stream')
+const cron = require('node-cron');
 const app = express();
 const dayjs = require('dayjs')
 const knex = require('./config/db');
@@ -29,6 +32,26 @@ app.use(async (req, res, next) => {
   next();
 });
 
+app.get('/stream', async (req, res) => {
+  const createReadStream = () => {
+    const data = ['Hello', 'Node.js', 'from', 'weBeetle']
+    return new Readable({
+      encoding: 'utf8',
+      read () {
+        if (data.length === 0) this.push(null)
+        else this.push(data.shift())
+      }
+    })
+  }
+  const rs = createReadStream()
+  rs.on('data', data => { 
+    console.log('Data chunk:\n', data)
+  })
+  rs.on('end', () => {
+    console.log('Read is finished!')
+  })
+});
+
 app.get('/', async (req, res) => {
   //console.log(req.session); // Add this line
   //const token = await getBearerToken(req);
@@ -39,15 +62,41 @@ app.get('/', async (req, res) => {
   });
 });
 
+
+
+// Define cron job outside of the endpoint handler
 app.get('/count', async (req, res) => {
-  const { from, to } = req.query;
-  const dateFrom = (from ? dayjs(from).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));
-  const dateTo = (to ? dayjs(to).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));
-  const data = await getCountImages(req, dateFrom, dateTo);
-  res.json(data);
-  knex.select('*').from('getty_images')
-  .then(data => console.log(data));
+  try {
+    const [latestCount] = await knex('getty_logs').orderBy('id', 'desc').limit(1);
+    const localCount = latestCount ? latestCount.result_count : 0;
+    const resultCount = await getCountImages(req);
+    const difference = resultCount - localCount;
+
+    if (difference !== 0) {
+      await knex('getty_logs').insert({ result_count: resultCount });
+      console.log(`Saved new total count ${resultCount} to database`);
+    }
+
+    res.json({
+      local_count: localCount,
+      result_count: resultCount,
+      difference: difference
+    });
+  } catch (error) {
+    console.error('Error getting count:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
+
+cron.schedule('*/1 * * * *', async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/count');
+    console.log(response.data);
+  } catch (error) {
+    console.error('Error calling count:', error);
+  }
+});
+
 
 /* Route Sync Images */
 app.post('/sync', async (req, res) => {
