@@ -6,6 +6,7 @@ const cron = require('node-cron');
 const app = express();
 const dayjs = require('dayjs')
 const knex = require('./config/db');
+const { logMessage } = require('./api/logs');
 // add session middleware
 app.use(session({
   secret: 'gettySecret', // You should replace this with your own secret key
@@ -20,7 +21,7 @@ const nodeCron = require("node-cron");
 
 
 // Require the Getty library
-const { getCountImages, getCurrentUser, getGettyImagesData } = require('./api/getty');
+const { getCountImages, getLocalCount, getCurrentUser, createGettyURLS, getGettyImagesData } = require('./api/getty');
 const { uploadImages } = require('./api/cloudinary');
 const { getBearerToken } = require('./api/auth.getty');
 
@@ -32,27 +33,8 @@ app.use(async (req, res, next) => {
   next();
 });
 
-app.get('/stream', async (req, res) => {
-  const createReadStream = () => {
-    const data = ['Hello', 'Node.js', 'from', 'weBeetle']
-    return new Readable({
-      encoding: 'utf8',
-      read () {
-        if (data.length === 0) this.push(null)
-        else this.push(data.shift())
-      }
-    })
-  }
-  const rs = createReadStream()
-  rs.on('data', data => { 
-    console.log('Data chunk:\n', data)
-  })
-  rs.on('end', () => {
-    console.log('Read is finished!')
-  })
-});
 
-app.get('/', async (req, res) => {
+app.get('/user', async (req, res) => {
   //console.log(req.session); // Add this line
   //const token = await getBearerToken(req);
   const currentUser = await getCurrentUser(req);
@@ -65,59 +47,69 @@ app.get('/', async (req, res) => {
 
 
 // Define cron job outside of the endpoint handler
-app.get('/count', async (req, res) => {
+app.get('/', async (req, res) => {
   try {
-    const [latestCount] = await knex('getty_logs').orderBy('id', 'desc').limit(1);
-    const localCount = latestCount ? latestCount.result_count : 0;
-    const resultCount = await getCountImages(req);
-    const difference = resultCount - localCount;
-
-    if (difference !== 0) {
-      await knex('getty_logs').insert({ result_count: resultCount });
-      console.log(`Saved new total count ${resultCount} to database`);
+    // get count from localhost 
+    const local = await getLocalCount();
+    //console.log(local);
+    // get count from Getty 
+    const gettyCount = await getCountImages(req);
+    
+    // Check if Getty count is greater than local count
+    if (gettyCount > local.total_local_images) {
+      const refresh = await getGettyImagesData(req);
+      console.log('refresh', refresh);
     }
 
     res.json({
-      local_count: localCount,
-      result_count: resultCount,
-      difference: difference
+      total_getty_images: gettyCount,
+        ...local
     });
+    logMessage('Success uploading files');
   } catch (error) {
     console.error('Error getting count:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-cron.schedule('*/1 * * * *', async () => {
-  try {
-    const response = await axios.get('http://localhost:3000/count');
-    console.log(response.data);
-  } catch (error) {
-    console.error('Error calling count:', error);
-  }
-});
+
+
 
 
 /* Route Sync Images */
 app.post('/sync', async (req, res) => {
-    const { from, to } = req.query;
-    const dateFrom = (from ? dayjs(from).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));
-    const dateTo = (to ? dayjs(to).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));
-    const urls = await getGettyImagesData(req, dateFrom, dateTo);
-
+  try {
+    const urls = await createGettyURLS(req);
+    //console.log(urls);
     if (urls && urls.length > 0) {
-      try {
-        const uploadedUrls = await uploadImages(urls);
-        res.status(200).json(uploadedUrls);
-      } catch (error) {
-        console.error('Error uploading images:', error);
-        res.status(500).json('Error uploading images');
-      }
+      const uploadedUrls = await uploadImages(urls);
+      logMessage('Success uploading files');
+      res.status(200).json({message: 'Success uploading'});
+      
     } else {
-      res.status(400).json('No images found to upload');
+      logMessage('No images found to upload');
+      res.status(400).json({message: 'No images found to upload'});
     }
-  });
+  } catch (error) {
+    logMessage('Error uploading images:', error);
+    console.error('Error uploading images:', error);
+    res.status(500).json('Error uploading images');
+  }
+});
 
+
+
+/* Route Logs */
+  app.get('/logs', async (req, res) => {
+    try {
+      const data = await knex('getty_logs').orderBy('id', 'desc');
+      res.status(200).json(data);
+    } catch (error) {
+      console.error('Error getting count:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+    
+});
 
 /* Route Test */
   app.post('/test', async (req, res) => {
@@ -128,15 +120,26 @@ app.post('/sync', async (req, res) => {
   uploadImages(urls)
     .then(uploadedUrls => {
       /* Response */
-      res.send(uploadedUrls);
+      res.status(200).json(uploadedUrls);
     })
     .catch(error => {
       /* Response */
-      res.send('Error uploading images:', error);
+      res.status(500).json('Error uploading images:', error);
     });
     
     
 });
+
+
+cron.schedule('*/1 * * * *', async () => {
+  try {
+    const response = await axios.post('http://localhost:3000/sync');
+    console.log(response.data);
+  } catch (error) {
+    console.error('Error calling count:', error);
+  }
+});
+
 
 // start the server
 const port = 3000;

@@ -1,7 +1,8 @@
 ## Getting Started
 
-> The service saves the Bearer token in a static file called token.json,
-> all services are server-side.
+> The service saves the Bearer token in `SESSION`,
+> all services are server-side. 
+> Database is a MUST!!!
 
 Folder & Files architecture
 
@@ -13,6 +14,7 @@ Folder & Files architecture
 - config (all config keys for making service work)
 - api (folder contains all api files with all functions)
 - api.postman_collection.json (all requests collection for Postman)
+- db.sql (mysql database schema)
 ```
 
 ## 📦 Installation
@@ -21,17 +23,20 @@ Folder & Files architecture
 
 1. Make sure you have git, node, and npm installed.
 2. Clone this repository locally.
-3. Execute ``` npm i ``` and then ``` node index ``` from the root directory of the repository.
-4. Open ``` localhost:3000 ``` in your `Postman` or similar.
+3. Uplaod the `db.sql` file
+4. Execute ``` npm i ``` and then ``` node index ``` from the root directory of the repository.
+5. Open ``` localhost:3000 ``` in your `Postman` or similar.
+6. Deploy on Vercel or other platforms
 
 
 ## 🤖 How to use
 There are some routes inside
 
- 1.  `/`
- 2.  `/count` you will get images_count previous request & total images to sync
- 3.  `/test` this action simpky updloas some random 3 getty images to cloudinary
- 3.  `/sync` this route donloads and uplaods iamges between dates
+1.  `/`
+2.  `/count` you will get images_count previous request & total images to sync
+3.  `/test` this action simpky updloas some random 3 getty images to cloudinary
+4.  `/logs` this route exports all logs saved into DB, so it makes a clear view foir you is any errors was found
+5.  `/sync` this route donloads and uplaods iamges between dates
 		- can pass params `from` & `to` default is `today`
 
 

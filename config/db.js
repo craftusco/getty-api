@@ -8,12 +8,12 @@ const db = {
       password : '@play_craftus',
       database : 'dbp5gdfaaom4cg',
       waitForConnections: true,
-      connectionLimit: 10,
+      connectionLimit: 100,
       queueLimit: 0,
     },
     pool: {
       min: 0,
-      max: 10,
+      max: 100,
     }
   };
 module.exports = knex(db)
