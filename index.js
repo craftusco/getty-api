@@ -91,7 +91,7 @@ app.post('/sync', async (req, res) => {
       res.status(400).json({message: 'No images found to upload'});
     }
   } catch (error) {
-    logMessage('Error uploading images:', error);
+    logMessage('Error uploading images:');
     console.error('Error uploading images:', error);
     res.status(500).json('Error uploading images');
   }
@@ -131,12 +131,24 @@ app.post('/sync', async (req, res) => {
 });
 
 
+/* 1ST CRONJOB TO CHECK COUNTS */
 cron.schedule('*/1 * * * *', async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/');
+    console.log(response.data);
+  } catch (error) {
+    logMessage('Error calling /count route');
+    console.error('Error calling count route:', error);
+  }
+});
+/* 2ND CRONJOB TO SYNC IMAGES */
+cron.schedule('*/2 * * * *', async () => {
   try {
     const response = await axios.post('http://localhost:3000/sync');
     console.log(response.data);
   } catch (error) {
-    console.error('Error calling count:', error);
+    logMessage('Error calling /sync route');
+    console.error('Error calling sync route:', error);
   }
 });
 
