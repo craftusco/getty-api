@@ -151,7 +151,7 @@ const createGettyURLS = async (req) => {
       const updateLocalData = await knex('getty_downloads')
         .update({ downloaded: 1 })
         .whereIn('id', rows.map(row => row.id)); 
-      //console.log('updateLocalData', updateLocalData);
+      console.log('updateLocalData', updateLocalData);
     } catch (error) {
       console.error('Error updating Getty Images data:', error.message);
     }
