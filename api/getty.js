@@ -130,7 +130,7 @@ const createGettyURLS = async (req) => {
 
   try {
     // Get all the IDs from the database
-    const rows = await knex('getty_downloads').select('id').where('downloaded', false ).limit(25);
+    const rows = await knex('getty_downloads').select('id').where('downloaded', false ).limit(20);
     //console.log(rows)
 
     // Create an array of promises for each image download request

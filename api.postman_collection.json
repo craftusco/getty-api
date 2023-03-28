@@ -23,7 +23,7 @@
 			"response": []
 		},
 		{
-			"name": "token",
+			"name": "user",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -38,17 +38,33 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://api.gettyimages.com/v3/customers/current",
-					"protocol": "https",
+					"raw": "http://localhost:3000/user",
+					"protocol": "http",
 					"host": [
-						"api",
-						"gettyimages",
-						"com"
+						"localhost"
 					],
+					"port": "3000",
 					"path": [
-						"v3",
-						"customers",
-						"current"
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "logs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/logs",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"logs"
 					]
 				}
 			},
@@ -60,7 +76,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/sync?from=2023-02-21&to=2023-02-22",
+					"raw": "http://localhost:3000/sync",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -68,35 +84,6 @@
 					"port": "3000",
 					"path": [
 						"sync"
-					],
-					"query": [
-						{
-							"key": "from",
-							"value": "2023-02-21"
-						},
-						{
-							"key": "to",
-							"value": "2023-02-22"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "count",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:3000/count",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"count"
 					]
 				}
 			},
@@ -181,7 +168,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{getty_bearer }}",
+							"value": "VD5nB9aBh/NL4q8wuhvMzkdvF4KAi7xt81CGtVswV77CcH/UZTzZT/wgORMOJCU9sbOf6pV10SaWMSq7z8JYc+0/qq0VpIUGiLsSjpW6P7vz+qHuFHRP5/8DjuvaTXZ8cmctbFVkq2TfP5nqOq7iFwXI9ORrzs5pNl8lf98+NiU=|77u/RmJVNVhOMjBYUnEwS1U0c2VhRlQKODY3NTg2MAo4MDgxMTM3CnR1RGhGZz09CnZ1ZmhGZz09CjEKaGV4YmNmcmUycjd4dnN5ZTVuYmd0djU2CjE1MS42NS4xMTguMjA3CjAKODY3NTg2MApOakxqRmc9PQo4Njc1ODYwCjAKCgo=|3|2|1",
 							"type": "string"
 						}
 					]
@@ -195,7 +182,7 @@
 					}
 				],
 				"url": {
-					"raw": "https://api.gettyimages.com/v3/downloads/images/1301443885?auto_download=false&use_team_credits=false",
+					"raw": "https://api.gettyimages.com/v3/downloads",
 					"protocol": "https",
 					"host": [
 						"api",
@@ -204,9 +191,7 @@
 					],
 					"path": [
 						"v3",
-						"downloads",
-						"images",
-						"1301443885"
+						"downloads"
 					],
 					"query": [
 						{
@@ -218,14 +203,6 @@
 							"key": "company_downloads",
 							"value": "false",
 							"disabled": true
-						},
-						{
-							"key": "auto_download",
-							"value": "false"
-						},
-						{
-							"key": "use_team_credits",
-							"value": "false"
 						}
 					]
 				}
@@ -233,14 +210,14 @@
 			"response": []
 		},
 		{
-			"name": "getty-download",
+			"name": "getty-download-image",
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{getty_bearer }}",
+							"value": "MDKPrynM/YuN93dEkPZwPIfUxWUQj9iupe+75YTXi+XwHu6MDQaRHwG4RvfAmIYGBuZd/DPyvJV4IgFBma/Nip4vOPaYT2GS3WMYX3dv2pjjgZ6lkOoSlnxK4HYpK0BrToVsRbBW9DeaWSGODuMhQo5jKHVpYNndlcwPhdEgB0A=|77u/Ty9HMzBLcXdRd3R6Rnd3Z3JxK24KODY3NTg2MAo4MDgxMTM3CjJHZlpGZz09CjRHN1pGZz09CjEKaGV4YmNmcmUycjd4dnN5ZTVuYmd0djU2CjE1MS42NS4xMTguMjA3CjAKODY3NTg2MApXTG5hRmc9PQo4Njc1ODYwCjAKCgo=|3|2|1",
 							"type": "string"
 						}
 					]
@@ -254,7 +231,7 @@
 					}
 				],
 				"url": {
-					"raw": "https://api.gettyimages.com/v3/downloads/images/1386308350?auto_download=true",
+					"raw": "https://api.gettyimages.com/v3/downloads/images/1178807719?auto_download=true",
 					"protocol": "https",
 					"host": [
 						"api",
@@ -265,12 +242,17 @@
 						"v3",
 						"downloads",
 						"images",
-						"1386308350"
+						"1178807719"
 					],
 					"query": [
 						{
 							"key": "auto_download",
 							"value": "true"
+						},
+						{
+							"key": "product_type",
+							"value": "easyaccess",
+							"disabled": true
 						}
 					]
 				}

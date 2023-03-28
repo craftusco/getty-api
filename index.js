@@ -132,7 +132,7 @@ app.post('/sync', async (req, res) => {
 
 
 /* 1ST CRONJOB TO CHECK COUNTS */
-cron.schedule('*/1 * * * *', async () => {
+cron.schedule('*/15 * * * *', async () => {
   try {
     const response = await axios.get('http://localhost:3000/');
     console.log(response.data);
@@ -142,7 +142,7 @@ cron.schedule('*/1 * * * *', async () => {
   }
 });
 /* 2ND CRONJOB TO SYNC IMAGES */
-cron.schedule('*/2 * * * *', async () => {
+cron.schedule('*/30 * * * *', async () => {
   try {
     const response = await axios.post('http://localhost:3000/sync');
     console.log(response.data);
