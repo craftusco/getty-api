@@ -51,7 +51,7 @@ app.get('/', async (req, res) => {
   try {
     // get count from localhost 
     const local = await getLocalCount();
-    console.log(local);
+    console.log('local', local);
     // get count from Getty 
     const gettyCount = await getCountImages(req);
     
@@ -65,7 +65,7 @@ app.get('/', async (req, res) => {
       total_getty_images: gettyCount,
         ...local
     });
-    logMessage('Success uploading files');
+    logMessage('Success refresh files');
   } catch (error) {
     console.error('Error getting count:', error);
     res.status(500).json({ error: 'Internal server error' });

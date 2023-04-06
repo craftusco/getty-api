@@ -1,6 +1,7 @@
 // getty.js
 const axios = require('axios');
 const dayjs = require('dayjs');
+const path = require('path');
 const knex = require('../config/db');
 const { getBearerToken } = require('./auth.getty');
 const credentials = require('../config/getty');
@@ -53,6 +54,7 @@ const getCountImages = async (req) => {
   }
 };
 
+/* Get Local Count */
 const getLocalCount = async () => {
   try {
     const result = await knex('getty_downloads')
@@ -73,13 +75,13 @@ const getLocalCount = async () => {
 /* Get User Downloads */
 const getGettyImagesData = async (req) => {
   const axiosInstance = await instance(req);
-  const pageSize = 100;
+  const pageSize = 50;
   let pageNumber = 1;
   let totalData = [];
   
   while (true) {
     const params = {
-      //date_from: dayjs().startOf('day').valueOf(),
+      date_from: dayjs().startOf('day').format('YYYY-MM-DD'),
       page_size: pageSize,
       page: pageNumber
     };
@@ -97,7 +99,7 @@ const getGettyImagesData = async (req) => {
       totalData = totalData.concat(data);
       pageNumber++;
     } catch (error) {
-      console.error('Error retrieving Getty Images data:', error.message);
+      console.error('Error retrieving Getty Images API:', error.message);
       return null;
     }
   }
@@ -105,14 +107,15 @@ const getGettyImagesData = async (req) => {
   
   /* Create an array of objects containing the ID of each downloaded image */
   const rows = totalData.map(item => {
-    return { id: item.id };
+    const filenameJSON = path.basename(item.thumb_uri).replace(/\?.*/, '');
+    return { id: item.id, product_type: item.product_type, filename: filenameJSON };
   });
   //console.log(totalData)
   
   // Insert the IDs into the database
   try {
     await knex('getty_downloads').insert(rows);
-    //console.log('IDs inserted successfully!');
+    console.log('IDs inserted successfully!');
   } catch (error) {
     console.error('Error inserting IDs into database:', error.message);
     return null;
@@ -125,16 +128,13 @@ const getGettyImagesData = async (req) => {
 
 
 /* Get User Downloads */
-const fs = require('fs');
-const path = require('path');
-
-/* Get User Downloads */
 const createGettyURLS = async (req) => {
   const axiosInstance = await instance(req);
 
   try {
     // Get all the IDs from the database
     const rows = await knex('getty_downloads').select('id').where('downloaded', false ).limit(20);
+    //console.log(rows)
 
     // Create an array of promises for each image download request
     const downloadPromises = rows.map(row => {
@@ -146,19 +146,9 @@ const createGettyURLS = async (req) => {
     // Execute all image download requests together
     const downloadResponses = await axios.all(downloadPromises);
 
-    // Save the downloaded images to the "downloads" folder
-    const downloadedImageUrls = downloadResponses.map(response => {
-      const filename = path.basename(response.headers['content-disposition'].split('; ')[1].split('=')[1], '"');
-      const filepath = path.join(__dirname, 'downloads', filename);
-      fs.writeFileSync(filepath, response.data, 'binary');
-      return {
-        uri: response.data.uri,
-        filename: filename,
-        metadata: response.data.metadata
-      };
-    });
-    console.log(downloadedImageUrls);
-/*
+    // Get the download URIs from the response data
+    const downloadedImageUrls = downloadResponses.map(response => response.data.uri);
+
     try {
       // Update the rows that have been downloaded
       const updateLocalData = await knex('getty_downloads')
@@ -168,7 +158,8 @@ const createGettyURLS = async (req) => {
     } catch (error) {
       console.error('Error updating Getty Images data:', error.message);
     }
-*/
+
+    //console.log(downloadedImageUrls);
     return downloadedImageUrls;
   } catch (error) {
     console.error('Error retrieving Getty Images data:', error.message);
