@@ -51,7 +51,7 @@ app.get('/', async (req, res) => {
   try {
     // get count from localhost 
     const local = await getLocalCount();
-    //console.log(local);
+    console.log(local);
     // get count from Getty 
     const gettyCount = await getCountImages(req);
     
@@ -80,9 +80,9 @@ app.get('/', async (req, res) => {
 app.post('/sync', async (req, res) => {
   try {
     const urls = await createGettyURLS(req);
-    //console.log(urls);
+    console.log(urls);
     if (urls && urls.length > 0) {
-      const uploadedUrls = await uploadImages(urls);
+      //const uploadedUrls = await uploadImages(urls);
       logMessage('Success uploading files');
       res.status(200).json({message: 'Success uploading'});
       
@@ -113,9 +113,7 @@ app.post('/sync', async (req, res) => {
 
 /* Route Test */
   app.post('/test', async (req, res) => {
-  const urls = ['https://media.gettyimages.com/id/1363108121/it/foto/blue-light-in-the-dark-room.jpg?s=2048x2048&w=gi&k=20&c=k8SlVCX9SxByagPFJfAXM1K02JZX1HciA5CJuIdbzWo=',
-   'https://media.gettyimages.com/id/1134532269/it/foto/eclipse.jpg?s=2048x2048&w=gi&k=20&c=k64J7teDkYGd92wJ8UKSOHBeEYCbmupGzgA_27wjU7E=', 
-   'https://media.gettyimages.com/id/1134531699/it/foto/eclipse.jpg?s=2048x2048&w=gi&k=20&c=UwSE6G6mkd51wPzUPcfjwImDq4KVvNi-oV0j7S1wX80='];
+  const urls = ['https://media.gettyimages.com/id/1363108121/it/foto/blue-light-in-the-dark-room.jpg?s=2048x2048&w=gi&k=20&c=k8SlVCX9SxByagPFJfAXM1K02JZX1HciA5CJuIdbzWo='];
 
   uploadImages(urls)
     .then(uploadedUrls => {
@@ -132,7 +130,7 @@ app.post('/sync', async (req, res) => {
 
 
 /* 1ST CRONJOB TO CHECK COUNTS */
-cron.schedule('*/15 * * * *', async () => {
+cron.schedule('*/2 * * * *', async () => {
   try {
     const response = await axios.get('http://localhost:3000/');
     console.log(response.data);
@@ -142,7 +140,7 @@ cron.schedule('*/15 * * * *', async () => {
   }
 });
 /* 2ND CRONJOB TO SYNC IMAGES */
-cron.schedule('*/30 * * * *', async () => {
+cron.schedule('*/5 * * * *', async () => {
   try {
     const response = await axios.post('http://localhost:3000/sync');
     console.log(response.data);

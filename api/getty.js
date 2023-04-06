@@ -79,7 +79,7 @@ const getGettyImagesData = async (req) => {
   
   while (true) {
     const params = {
-      date_from: dayjs().startOf('day').valueOf(),
+      //date_from: dayjs().startOf('day').valueOf(),
       page_size: pageSize,
       page: pageNumber
     };
@@ -125,13 +125,16 @@ const getGettyImagesData = async (req) => {
 
 
 /* Get User Downloads */
+const fs = require('fs');
+const path = require('path');
+
+/* Get User Downloads */
 const createGettyURLS = async (req) => {
   const axiosInstance = await instance(req);
 
   try {
     // Get all the IDs from the database
     const rows = await knex('getty_downloads').select('id').where('downloaded', false ).limit(20);
-    //console.log(rows)
 
     // Create an array of promises for each image download request
     const downloadPromises = rows.map(row => {
@@ -143,9 +146,19 @@ const createGettyURLS = async (req) => {
     // Execute all image download requests together
     const downloadResponses = await axios.all(downloadPromises);
 
-    // Get the download URIs from the response data
-    const downloadedImageUrls = downloadResponses.map(response => response.data.uri);
-
+    // Save the downloaded images to the "downloads" folder
+    const downloadedImageUrls = downloadResponses.map(response => {
+      const filename = path.basename(response.headers['content-disposition'].split('; ')[1].split('=')[1], '"');
+      const filepath = path.join(__dirname, 'downloads', filename);
+      fs.writeFileSync(filepath, response.data, 'binary');
+      return {
+        uri: response.data.uri,
+        filename: filename,
+        metadata: response.data.metadata
+      };
+    });
+    console.log(downloadedImageUrls);
+/*
     try {
       // Update the rows that have been downloaded
       const updateLocalData = await knex('getty_downloads')
@@ -155,8 +168,7 @@ const createGettyURLS = async (req) => {
     } catch (error) {
       console.error('Error updating Getty Images data:', error.message);
     }
-
-    //console.log(downloadedImageUrls);
+*/
     return downloadedImageUrls;
   } catch (error) {
     console.error('Error retrieving Getty Images data:', error.message);
