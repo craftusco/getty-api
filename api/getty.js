@@ -107,7 +107,8 @@ const getGettyImagesData = async (req) => {
   
   /* Create an array of objects containing the ID of each downloaded image */
   const rows = totalData.map(item => {
-    const filenameJSON = path.basename(item.thumb_uri).replace(/\?.*/, '');
+    const filenameJSON = path.parse(path.basename(item.thumb_uri)).name.replace(/\?.*/, '');
+   
     return { id: item.id, product_type: item.product_type, filename: filenameJSON };
   });
   //console.log(totalData)
@@ -123,6 +124,20 @@ const getGettyImagesData = async (req) => {
 
   // Return an array of the downloaded image IDs
   const downloadedIds = totalData.map(item => item.id);
+
+  /* get getty meta object also */
+  const fileMETA = getGettyMETA(downloadedIds);
+  
+    /* Update the IDs into the database
+    try {
+      await knex('getty_downloads')
+      .update({ meta: fileMETA })
+      .whereIn('id', rows.map(row => row.id)); 
+    } catch (error) {
+      console.error('Error inserting IDs into database:', error.message);
+      return null;
+    }*/
+  
   return downloadedIds;
 };
 
@@ -169,6 +184,22 @@ const createGettyURLS = async (req) => {
 };
 
 
+/* Get Getty META */
+const getGettyMETA = async (req, ids) => {
+
+  const axiosInstance = await instance(req);
+  const idString = ids.join(',');
+  
+    try {
+      const response = await axiosInstance.get(`${GETTY_API_URL}/v3/images?ids=${idString}`);
+      console.log(response);
+      return response.images;
+      
+    } catch (error) {
+      console.error('Error retrieving data:', error.message);
+      return null;
+    }
+  };
 
 
 
@@ -176,4 +207,6 @@ const createGettyURLS = async (req) => {
 
 
 
-module.exports = { getCurrentUser, getCountImages, createGettyURLS, getLocalCount, getGettyImagesData };
+
+
+module.exports = { getCurrentUser, getCountImages, createGettyURLS, getLocalCount, getGettyImagesData, getGettyMETA };

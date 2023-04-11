@@ -27,6 +27,25 @@ const uploadImages = async (urls) => {
 };
 
 
+/* Upload Images by given URLS */
+const bulkEdit = async (urls) => {
+  const uploadedImages = [];
+  for (const url of urls) {
+    const options = {
+      folder: `/Getty`, // set public_id to the desired filename
+      overwrite: true, // overwrite existing images
+      use_filename: true, 
+      unique_filename: false, // overwrite existing images
+      resource_type: 'image' // ensure that Cloudinary treats the file as an image
+    };
+    await cloudinary.uploader.upload(url, options)
+      .then(result => uploadedImages.push(result))
+      .catch(error => console.error('Error uploading image:', error.message));
+  }
+  return uploadedImages;
+};
 
 
-module.exports = { uploadImages };
+
+
+module.exports = { uploadImages, bulkEdit };

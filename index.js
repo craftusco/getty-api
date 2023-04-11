@@ -7,6 +7,9 @@ const app = express();
 const dayjs = require('dayjs')
 const knex = require('./config/db');
 const { logMessage } = require('./api/logs');
+
+
+
 // add session middleware
 app.use(session({
   secret: 'gettySecret', // You should replace this with your own secret key
@@ -30,6 +33,8 @@ const { getBearerToken } = require('./api/auth.getty');
 // Middleware to add the Getty access token to each request
 app.use(async (req, res, next) => {
   req.token = await getBearerToken(req);
+  /* dynamic URL */
+  global.currentUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
   next();
 });
 
@@ -132,7 +137,7 @@ app.post('/sync', async (req, res) => {
 /* 1ST CRONJOB TO CHECK COUNTS */
 cron.schedule('*/2 * * * *', async () => {
   try {
-    const response = await axios.get('http://localhost:3000/');
+    const response = await axios.get(`${global.currentUrl}`);
     console.log(response.data);
   } catch (error) {
     logMessage('Error calling /count route');
@@ -142,7 +147,7 @@ cron.schedule('*/2 * * * *', async () => {
 /* 2ND CRONJOB TO SYNC IMAGES */
 cron.schedule('*/5 * * * *', async () => {
   try {
-    const response = await axios.post('http://localhost:3000/sync');
+    const response = await axios.post(`${global.currentUrl}/sync`);
     console.log(response.data);
   } catch (error) {
     logMessage('Error calling /sync route');
