@@ -75,13 +75,13 @@ const getLocalCount = async () => {
 /* Get User Downloads */
 const getGettyImagesData = async (req) => {
   const axiosInstance = await instance(req);
-  const pageSize = 50;
+  const pageSize = 100;
   let pageNumber = 1;
   let totalData = [];
   
   while (true) {
     const params = {
-      date_from: dayjs().startOf('day').format('YYYY-MM-DD'),
+      date_from: '2023-01-01', //dayjs().startOf('day').format('YYYY-MM-DD'),
       page_size: pageSize,
       page: pageNumber
     };
@@ -90,7 +90,7 @@ const getGettyImagesData = async (req) => {
     try {
       const response = await axiosInstance.get('/downloads', { params });
       const data = response.data.downloads;
-      //console.log('resp', response.data)
+      console.log('resp', response)
       // If there's no data in the response, break out of the loop
       if (data.length === 0) {
         break;
@@ -111,8 +111,8 @@ const getGettyImagesData = async (req) => {
    
     return { id: item.id, product_type: item.product_type, filename: filenameJSON };
   });
-  //console.log(totalData)
-  
+  console.log(totalData)
+  //console.table(rows);
   // Insert the IDs into the database
   try {
     await knex('getty_downloads').insert(rows);
@@ -127,7 +127,8 @@ const getGettyImagesData = async (req) => {
 
   /* get getty meta object also */
   const fileMETA = getGettyMETA(downloadedIds);
-  
+
+  console.table(fileMETA)
     /* Update the IDs into the database
     try {
       await knex('getty_downloads')
@@ -154,7 +155,7 @@ const createGettyURLS = async (req) => {
     // Create an array of promises for each image download request
     const downloadPromises = rows.map(row => {
       const imageId = row.id;
-      const downloadUrl = `${GETTY_API_URL}/downloads/images/${imageId}?auto_download=false&use_team_credits=true`;
+      const downloadUrl = `${GETTY_API_URL}/downloads/images/${imageId}?auto_download=false`;
       return axiosInstance.post(downloadUrl);
     });
 
@@ -193,7 +194,7 @@ const getGettyMETA = async (req, ids) => {
     try {
       const response = await axiosInstance.get(`${GETTY_API_URL}/v3/images?ids=${idString}`);
       console.log(response);
-      return response.images;
+      return response.data.images;
       
     } catch (error) {
       console.error('Error retrieving data:', error.message);

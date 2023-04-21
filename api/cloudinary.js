@@ -32,7 +32,7 @@ const bulkEdit = async (urls) => {
   const uploadedImages = [];
   for (const url of urls) {
     const options = {
-      folder: `/Getty`, // set public_id to the desired filename
+      folder: `c39a0e23630947bbce08d6a5cb47129e37`, // set public_id to the desired filename
       overwrite: true, // overwrite existing images
       use_filename: true, 
       unique_filename: false, // overwrite existing images
