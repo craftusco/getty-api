@@ -24,8 +24,8 @@ const nodeCron = require("node-cron");
 
 
 // Require the Getty library
-const { getCountImages, getLocalCount, getCurrentUser, createGettyURLS, getGettyImagesData } = require('./api/getty');
-const { uploadImages } = require('./api/cloudinary');
+const { getCountImages, getLocalCount, getCurrentUser, retrieveGettyUri, retrieveGettyMeta, retrieveGettyImagesData } = require('./api/getty');
+const { uploadImages, editBulk, testUpload } = require('./api/cloudinary');
 const { getBearerToken } = require('./api/auth.getty');
 
 
@@ -56,15 +56,18 @@ app.get('/', async (req, res) => {
   try {
     // get count from localhost 
     const local = await getLocalCount();
-    console.log('local', local);
-    // get count from Getty 
+    //console.log('local', local);
+    // Get count from Getty 
     const gettyCount = await getCountImages(req);
-    
-    // Check if Getty count is greater than local count
-    if (gettyCount > local.total_local_images) {
-      const refresh = await getGettyImagesData(req);
-      console.log('refresh', refresh);
-    }
+
+    const refresh = await retrieveGettyUri(req);
+    console.log('refresh', refresh);
+
+    /* Check if Getty count is greater than local count
+    if (gettyCount > local?.total_local_images) {
+      
+      
+    }*/
 
     res.json({
       total_getty_images: gettyCount,
@@ -80,21 +83,27 @@ app.get('/', async (req, res) => {
 
 
 
-
 /* Route Sync Images */
 app.post('/sync', async (req, res) => {
   try {
-    const urls = await createGettyURLS(req);
+    const urls = await retrieveGettyUri(req);
+
     console.log(urls);
-    if (urls && urls.length > 0) {
-      //const uploadedUrls = await uploadImages(urls);
-      logMessage('Success uploading files');
-      res.status(200).json({message: 'Success uploading'});
-      
-    } else {
-      logMessage('No images found to upload');
-      res.status(400).json({message: 'No images found to upload'});
-    }
+    
+  } catch (error) {
+    logMessage('Error uploading images:');
+    console.error('Error uploading images:', error);
+    res.status(500).json('Error uploading images');
+  }
+});
+
+/* Route Sync Images */
+app.post('/upload', async (req, res) => {
+  try {
+    const uplodaProcess = await uploadImages(req);
+
+    console.log(uplodaProcess);
+
   } catch (error) {
     logMessage('Error uploading images:');
     console.error('Error uploading images:', error);
@@ -118,19 +127,7 @@ app.post('/sync', async (req, res) => {
 
 /* Route Test */
   app.post('/test', async (req, res) => {
-  const urls = ['https://media.gettyimages.com/id/1363108121/it/foto/blue-light-in-the-dark-room.jpg?s=2048x2048&w=gi&k=20&c=k8SlVCX9SxByagPFJfAXM1K02JZX1HciA5CJuIdbzWo='];
-
-  uploadImages(urls)
-    .then(uploadedUrls => {
-      /* Response */
-      res.status(200).json(uploadedUrls);
-    })
-    .catch(error => {
-      /* Response */
-      res.status(500).json('Error uploading images:', error);
-    });
-    
-    
+  testUpload();
 });
 
 

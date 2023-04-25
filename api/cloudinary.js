@@ -1,6 +1,8 @@
 // cloudinary.js
 const cloudinary = require('cloudinary').v2;
 const { cloudName, apiKey, apiSecret } = require('../config/cloudinary');
+const knex = require('../config/db');
+
 
 cloudinary.config({
   cloud_name: cloudName,
@@ -8,44 +10,66 @@ cloudinary.config({
   api_secret: apiSecret
 });
 
-/* Upload Images by given URLS */
-const uploadImages = async (urls) => {
+/* Upload Images to Cloudinary */
+
+const uploadImages = async () => {
+  const rows = await knex("getty_downloads")
+    .select('*')
+    .where({ downloaded: false })
+    .havingNotNull('uri'); //use "andWhereNotNull" instead of "havingNotNull"
+
   const uploadedImages = [];
-  for (const url of urls) {
+  for (const row of rows) {
+    //use "row" instead of "url" to represent each row
+    const folder =
+      row.product_id === "easyaccess"
+        ? "/Getty/Dedicated photographers"
+        : "/Getty/Editorial Subscriptions";
     const options = {
-      folder: `/Getty`, // set public_id to the desired filename
-      overwrite: true, // overwrite existing images
-      use_filename: true, 
-      unique_filename: false, // overwrite existing images
-      resource_type: 'image' // ensure that Cloudinary treats the file as an image
+      folder,
+      overwrite: true,
+      context: JSON.parse(row.meta), //use "row" instead of "url" to access the meta property
+      public_id: row.filename,
+      title: row.filename,
+      unique_filename: false,
+      resource_type: "image",
     };
-    await cloudinary.uploader.upload(url, options)
-      .then(result => uploadedImages.push(result))
-      .catch(error => console.error('Error uploading image:', error.message));
+    try {
+      const result = await cloudinary.uploader.upload(row.uri, options); //use "row.uri" instead of "url"
+      uploadedImages.push(result);
+      console.log(`Image uploaded successfully: ${result.public_id}`);
+    } catch (error) {
+      console.error("Error uploading image:", error.message);
+    }
   }
   return uploadedImages;
 };
 
 
-/* Upload Images by given URLS */
-const bulkEdit = async (urls) => {
-  const uploadedImages = [];
-  for (const url of urls) {
-    const options = {
-      folder: `c39a0e23630947bbce08d6a5cb47129e37`, // set public_id to the desired filename
-      overwrite: true, // overwrite existing images
-      use_filename: true, 
-      unique_filename: false, // overwrite existing images
-      resource_type: 'image' // ensure that Cloudinary treats the file as an image
-    };
-    await cloudinary.uploader.upload(url, options)
-      .then(result => uploadedImages.push(result))
-      .catch(error => console.error('Error uploading image:', error.message));
-  }
-  return uploadedImages;
-};
+
+
+/* Test Upload with rename */
+const testUpload = async () => {
+  // Define the image URL and contextual Metadata
+  const imageUrl = 'https://via.placeholder.com/800x533/FF0000/FFFFFF?text=gettyimage';
+
+  // Upload the image and add the contextual Metadata
+  cloudinary.uploader.upload(imageUrl, { 
+    public_id: 'my_image', 
+    context: { 
+      caption: 'A beautiful sunset',
+      location: 'San Francisco',
+      year: '2023'
+    }, 
+    overwrite: true 
+  })
+    .then(uploadResult => {
+      console.log(uploadResult);
+    })
+    .catch(error => console.error(error));
+  };
 
 
 
 
-module.exports = { uploadImages, bulkEdit };
+module.exports = { uploadImages, testUpload };

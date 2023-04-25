@@ -12,7 +12,7 @@
 	1. runs count query (checking all new images)
 	2. saves into db the new images with `filename` and `meta`
 2. every `35min`
-	1. runs the query to send to cloudinary donwloadable `URLS` from getty (url expires after some time)
+	1. runs the query to send to cloudinary donwloadable `Urls` from getty (url expires after some time)
 	2. after upload successfull, update `downloaded: TRUE` into db, so service will know that image was uploaded
 	3. finally running query to bulk edit `filename` & `meta` on all the iamges that was just uploaded 
 
