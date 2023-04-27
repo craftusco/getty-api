@@ -25,7 +25,7 @@ const nodeCron = require("node-cron");
 
 // Require the Getty library
 const { getCountImages, getLocalCount, getCurrentUser, retrieveGettyUri, retrieveGettyMeta, retrieveGettyImagesData } = require('./api/getty');
-const { uploadImages, editBulk, testUpload } = require('./api/cloudinary');
+const { uploadImages, testUpload } = require('./api/cloudinary');
 const { getBearerToken } = require('./api/auth.getty');
 
 
