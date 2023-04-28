@@ -4,6 +4,19 @@
 > all services are server-side. 
 > Database is a MUST!!!
 
+The `instance` function creates an axios instance with the user's authorization token, which is stored in the session object. 
+
+The `getCurrentUser` function retrieves the details of the currently logged-in user. 
+
+The `getCountImages` function retrieves the total number of images downloaded by the user, and the `getLocalCount` function retrieves the number of images downloaded and those yet to be downloaded.
+
+The `retrieveGettyImagesData` function retrieves the user's downloaded images from the Getty Images API, stores them in a local database, and returns an array of the downloaded image IDs. 
+
+The `retrieveGettyUri` function retrieves the URIs for the images that are yet to be downloaded and updates their records in the local database. 
+
+The `retrieveGettyMeta` function retrieves the metadata for the images that are yet to be downloaded and updates their records in the local database.
+
+
 ## ⏱️ Crons
 
 `2 cronjobs` as following

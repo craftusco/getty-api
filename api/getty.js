@@ -3,8 +3,8 @@ const axios = require('axios');
 const dayjs = require('dayjs');
 const path = require('path');
 const knex = require('../config/db');
-const { getBearerToken } = require('./auth.getty');
 const credentials = require('../config/getty');
+
 
 const GETTY_API_URL = 'https://api.gettyimages.com/v3';
 
@@ -75,7 +75,7 @@ const getLocalCount = async () => {
 /* Get User Downloads */
 const retrieveGettyImagesData = async (req) => {
   const axiosInstance = await instance(req);
-  const pageSize = 5;
+  const pageSize = 50;
   let pageNumber = 1;
   let totalData = [];
   
@@ -90,12 +90,14 @@ const retrieveGettyImagesData = async (req) => {
     try {
       const response = await axiosInstance.get('/downloads', { params });
       const data = response.data.downloads;
-      console.log('resp', response)
+      //console.log('resp', response)
       // If there's no data in the response, break out of the loop
       if (data.length === 0) {
         break;
       }
+
       
+
       totalData = totalData.concat(data);
       pageNumber++;
     } catch (error) {
@@ -111,20 +113,18 @@ const retrieveGettyImagesData = async (req) => {
    
     return { id: item.id, product_type: item.product_type, filename: filenameJSON };
   });
-  console.log(totalData)
+  //console.log(totalData)
   //console.table(rows);
   // Insert the IDs into the database
   try {
     await knex('getty_downloads').insert(rows);
     console.log('IDs inserted successfully!');
+    return {success: true, message: "Images downloaded successfully"};
   } catch (error) {
     console.error('Error inserting IDs into database:', error.message);
-    return null;
+    return { success: false, error: error.message };
   }
 
-
-  
-  return downloadedIds;
 };
 
 
@@ -133,8 +133,8 @@ const retrieveGettyUri = async (req) => {
   const axiosInstance = await instance(req);
   try {
     // Return an array of the downloaded image IDs
-    const ids = await knex('getty_downloads').select('id').where('downloaded', false).limit(5).pluck('id');
-    console.log(ids);
+    const ids = await knex('getty_downloads').select('id').where('downloaded', false).havingNull('uri').limit(50).pluck('id');
+    //console.log(ids);
 
 
     // Retrieve metadata for the images
@@ -142,7 +142,7 @@ const retrieveGettyUri = async (req) => {
       try {
         const imageResponse = await axiosInstance.post(`${GETTY_API_URL}/downloads/images/${id}?auto_download=false`);
         await knex('getty_downloads').where('id', id).update({ uri: imageResponse.data.uri });
-        console.log(imageResponse.data);
+        //console.log(imageResponse.data);
       } catch (error) {
         console.error(`Error updating URI for image ID ${id}:`, error.message);
         return null;
@@ -163,7 +163,7 @@ const retrieveGettyMeta = async (req) => {
   const axiosInstance = await instance(req);
   try {
     // Return an array of the downloaded image IDs
-    const ids = await knex('getty_downloads').select('id').where('downloaded', false).limit(5).pluck('id');
+    const ids = await knex('getty_downloads').select('id').where('downloaded', false).havingNull('meta').limit(50).pluck('id');
     
     /* Concat IDs */
     const idString = ids.join(',');

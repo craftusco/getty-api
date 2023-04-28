@@ -24,7 +24,7 @@ const nodeCron = require("node-cron");
 
 
 // Require the Getty library
-const { getCountImages, getLocalCount, getCurrentUser, retrieveGettyUri, retrieveGettyMeta, retrieveGettyImagesData } = require('./api/getty');
+const { getCountImages, getLocalCount, getCurrentUser, retrieveGettyImagesData, retrieveGettyUri, retrieveGettyMeta } = require('./api/getty');
 const { uploadImages, testUpload } = require('./api/cloudinary');
 const { getBearerToken } = require('./api/auth.getty');
 
@@ -59,15 +59,14 @@ app.get('/', async (req, res) => {
     //console.log('local', local);
     // Get count from Getty 
     const gettyCount = await getCountImages(req);
-
-    const refresh = await retrieveGettyUri(req);
-    console.log('refresh', refresh);
-
-    /* Check if Getty count is greater than local count
+ 
+    /* Check if Getty count is greater than local count */
     if (gettyCount > local?.total_local_images) {
       
-      
-    }*/
+      const refresh = await retrieveGettyImagesData(req);
+    }
+   
+
 
     res.json({
       total_getty_images: gettyCount,
@@ -81,28 +80,17 @@ app.get('/', async (req, res) => {
 });
 
 
-
-
-/* Route Sync Images */
-app.post('/sync', async (req, res) => {
-  try {
-    const urls = await retrieveGettyUri(req);
-
-    console.log(urls);
-    
-  } catch (error) {
-    logMessage('Error uploading images:');
-    console.error('Error uploading images:', error);
-    res.status(500).json('Error uploading images');
-  }
-});
-
 /* Route Sync Images */
 app.post('/upload', async (req, res) => {
   try {
+
+    const updateMETA = await retrieveGettyMeta(req); 
+    const updateURI = await retrieveGettyUri(req); 
+    
+
     const uplodaProcess = await uploadImages(req);
 
-    console.log(uplodaProcess);
+    res.json({success: true, message: "Images downloaded successfully"});
 
   } catch (error) {
     logMessage('Error uploading images:');
@@ -141,6 +129,7 @@ cron.schedule('*/2 * * * *', async () => {
     console.error('Error calling count route:', error);
   }
 });
+
 /* 2ND CRONJOB TO SYNC IMAGES */
 cron.schedule('*/5 * * * *', async () => {
   try {

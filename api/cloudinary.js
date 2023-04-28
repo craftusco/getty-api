@@ -16,7 +16,8 @@ const uploadImages = async () => {
   const rows = await knex("getty_downloads")
     .select('*')
     .where({ downloaded: false })
-    .havingNotNull('uri'); //use "andWhereNotNull" instead of "havingNotNull"
+    .havingNotNull('uri')
+    .limit(100); //use "andWhereNotNull" instead of "havingNotNull"
 
   const uploadedImages = [];
   for (const row of rows) {
@@ -25,19 +26,38 @@ const uploadImages = async () => {
       row.product_id === "easyaccess"
         ? "/Getty/Dedicated photographers"
         : "/Getty/Editorial Subscriptions";
-    const options = {
-      folder,
-      overwrite: true,
-      context: JSON.parse(row.meta), //use "row" instead of "url" to access the meta property
-      public_id: row.filename,
-      title: row.filename,
-      unique_filename: false,
-      resource_type: "image",
-    };
+        //set parsed Object to Context Meta on CLoudinary
+        const parsedRow = JSON.parse(row.meta);
+      const options = {
+        folder,
+        overwrite: true,
+        context: JSON.parse(row.meta), //use "row" instead of "url" to access the meta property
+        public_id: row.filename,
+        title: row.filename,
+        unique_filename: false,
+        resource_type: "image",
+      };
+    //replace caption with description of cloudinary
+    options.context.caption = options.context.title;
+    options.context.alt = options.context.caption;
+    options.context.photographer = options.context.artist;
+    // Now delete them fro moriginal json
+    delete options.context.title;
+    delete options.context.caption;
+    delete options.context.artist;
+
     try {
       const result = await cloudinary.uploader.upload(row.uri, options); //use "row.uri" instead of "url"
       uploadedImages.push(result);
-      console.log(`Image uploaded successfully: ${result.public_id}`);
+       
+      //Now update to downloaded TRUE all ids uplaoded to Cloudinary
+      const idsToUpdate = rows.map(row => row.id); // Assuming the primary key of your table is named "id"
+
+      await knex("getty_downloads")
+        .whereIn("id", idsToUpdate)
+        .update({ downloaded: true });
+
+      //console.log(`Image uploaded successfully: ${result.public_id}`);
     } catch (error) {
       console.error("Error uploading image:", error.message);
     }
