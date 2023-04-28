@@ -16,7 +16,8 @@ const uploadImages = async () => {
   const rows = await knex("getty_downloads")
     .select('*')
     .where({ downloaded: false })
-    .havingNotNull('uri')
+    .whereNotNull('uri')
+    .whereNotNull('meta')
     .limit(100); //use "andWhereNotNull" instead of "havingNotNull"
 
   const uploadedImages = [];
@@ -38,7 +39,8 @@ const uploadImages = async () => {
         resource_type: "image",
       };
     //replace caption with description of cloudinary
-    //options.context.alt = options.context?.caption;
+    options.context.caption = options.context?.title;
+    options.context.alt = options.context?.caption;
 
 
     try {
