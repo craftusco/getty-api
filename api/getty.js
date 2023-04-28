@@ -133,7 +133,7 @@ const retrieveGettyUri = async (req) => {
   const axiosInstance = await instance(req);
   try {
     // Return an array of the downloaded image IDs
-    const ids = await knex('getty_downloads').select('id').where('downloaded', false).havingNull('uri').limit(50).pluck('id');
+    const ids = await knex('getty_downloads').select('id').where({'downloaded': false}).whereNotNull('uri').limit(50).pluck('id');
     //console.log(ids);
 
 
@@ -163,7 +163,7 @@ const retrieveGettyMeta = async (req) => {
   const axiosInstance = await instance(req);
   try {
     // Return an array of the downloaded image IDs
-    const ids = await knex('getty_downloads').select('id').where('downloaded', false).havingNull('meta').limit(50).pluck('id');
+    const ids = await knex('getty_downloads').select('id').where({'downloaded': false}).whereNotNull('meta').limit(50).pluck('id');
     
     /* Concat IDs */
     const idString = ids.join(',');

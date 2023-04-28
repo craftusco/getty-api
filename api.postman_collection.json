@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "fe71bc60-eb89-4389-8113-db5f450d2177",
-		"name": "Upwork - DIRECTUS Cloudinary",
+		"name": "Upwork - Cloudinary",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "5580700"
 	},
@@ -90,6 +90,25 @@
 			"response": []
 		},
 		{
+			"name": "upload",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/upload",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "test",
 			"request": {
 				"method": "POST",
@@ -168,7 +187,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "VD5nB9aBh/NL4q8wuhvMzkdvF4KAi7xt81CGtVswV77CcH/UZTzZT/wgORMOJCU9sbOf6pV10SaWMSq7z8JYc+0/qq0VpIUGiLsSjpW6P7vz+qHuFHRP5/8DjuvaTXZ8cmctbFVkq2TfP5nqOq7iFwXI9ORrzs5pNl8lf98+NiU=|77u/RmJVNVhOMjBYUnEwS1U0c2VhRlQKODY3NTg2MAo4MDgxMTM3CnR1RGhGZz09CnZ1ZmhGZz09CjEKaGV4YmNmcmUycjd4dnN5ZTVuYmd0djU2CjE1MS42NS4xMTguMjA3CjAKODY3NTg2MApOakxqRmc9PQo4Njc1ODYwCjAKCgo=|3|2|1",
+							"value": "lknuj3ZsMJkzA4zArumxEhcRPAW3m/ldo7Q4DkrbqP/fecVlnzLlDR19iT1+7vNUGGohYWawpaO/CV97HZqNhEoDNOPbEP2qkz6bPjEyxuY4yUYtBfHCD1RHHrieNUJY02anxSBkdGF4/QiyTipIQXPilSKMbmXqWTAZQMtksBQ=|77u/RWJZSUZWd1B4MjM0UldJQmhmMFIKODY3NTg2MAo4MDgxMTM3CjJPOFhGdz09CjRQWVhGdz09CjEKaGV4YmNmcmUycjd4dnN5ZTVuYmd0djU2CjE1MS42NS42Ljg3CjAKODY3NTg2MApXRUVaRnc9PQo4Njc1ODYwCjAKCgo=|3|4|1",
 							"type": "string"
 						}
 					]
@@ -182,7 +201,7 @@
 					}
 				],
 				"url": {
-					"raw": "https://api.gettyimages.com/v3/downloads",
+					"raw": "https://api.gettyimages.com/v3/downloads?date_from=2023-04-12&page_size=30",
 					"protocol": "https",
 					"host": [
 						"api",
@@ -195,14 +214,12 @@
 					],
 					"query": [
 						{
-							"key": "page_size",
-							"value": "30",
-							"disabled": true
+							"key": "date_from",
+							"value": "2023-04-12"
 						},
 						{
-							"key": "company_downloads",
-							"value": "false",
-							"disabled": true
+							"key": "page_size",
+							"value": "30"
 						}
 					]
 				}
@@ -217,7 +234,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "MDKPrynM/YuN93dEkPZwPIfUxWUQj9iupe+75YTXi+XwHu6MDQaRHwG4RvfAmIYGBuZd/DPyvJV4IgFBma/Nip4vOPaYT2GS3WMYX3dv2pjjgZ6lkOoSlnxK4HYpK0BrToVsRbBW9DeaWSGODuMhQo5jKHVpYNndlcwPhdEgB0A=|77u/Ty9HMzBLcXdRd3R6Rnd3Z3JxK24KODY3NTg2MAo4MDgxMTM3CjJHZlpGZz09CjRHN1pGZz09CjEKaGV4YmNmcmUycjd4dnN5ZTVuYmd0djU2CjE1MS42NS4xMTguMjA3CjAKODY3NTg2MApXTG5hRmc9PQo4Njc1ODYwCjAKCgo=|3|2|1",
+							"value": "BZ2qc6CIWnTmFoxSzBgcFhhBJe9swhxleXSj7LmL6E/lwB0qoIB4bCW0mnkrscZTKdGNENyySorQX4jOYnI6fdyNYXBVJSeljxGx/oCO5ak3wEO6i7CciJBbgllYpCsPkgtYdndRxwyF8jU/GKLV6lbynk38aZMB99atbwcw4Sk=|77u/b3lwUllDNkx2djlIL2RMdm8wSC8KODY3NTg2MAo4MDgxMTM3CklYSXBGdz09CktYa3BGdz09CjEKaGV4YmNmcmUycjd4dnN5ZTVuYmd0djU2CjE1MS42NS42Ljg3CjAKODY3NTg2MApvY01xRnc9PQo4Njc1ODYwCjAKCgo=|3|2|1",
 							"type": "string"
 						}
 					]
@@ -231,7 +248,7 @@
 					}
 				],
 				"url": {
-					"raw": "https://api.gettyimages.com/v3/downloads/images/1178807719?auto_download=true",
+					"raw": "https://api.gettyimages.com/v3/downloads/images/1014741580?auto_download=false",
 					"protocol": "https",
 					"host": [
 						"api",
@@ -242,17 +259,55 @@
 						"v3",
 						"downloads",
 						"images",
-						"1178807719"
+						"1014741580"
 					],
 					"query": [
 						{
 							"key": "auto_download",
-							"value": "true"
-						},
+							"value": "false"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view-image",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "product_type",
-							"value": "easyaccess",
-							"disabled": true
+							"key": "token",
+							"value": "ubgrk3076sYDGmsdFiLUdvIP3NIDifvqR++uj12LnBsCEhBzI0UYiXGar3NKngQ2WsgRCR7OEEwTKGqFpTDCw8j7bLb/GNAJQmChASjr2SrRaWwO2Boe5yX08KGsxAKA0N3Tus41DjDHSE8E0cIzSxJof8XAzgHtUYhNOqNnbT8=|77u/QVBXMUs0d2RXSlJuWVRnZXpudlgKODY3NTg2MAo4MDgxMTM3CjhsSXRGdz09Citsa3RGdz09CjEKaGV4YmNmcmUycjd4dnN5ZTVuYmd0djU2CjE1MS42NS42Ljg3CjAKODY3NTg2MApjcVF1Rnc9PQo4Njc1ODYwCjAKCgo=|3|2|1",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Api-Key",
+						"value": "{{getty_key}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://api.gettyimages.com/v3/images?ids=1416031538",
+					"protocol": "https",
+					"host": [
+						"api",
+						"gettyimages",
+						"com"
+					],
+					"path": [
+						"v3",
+						"images"
+					],
+					"query": [
+						{
+							"key": "ids",
+							"value": "1416031538"
 						}
 					]
 				}

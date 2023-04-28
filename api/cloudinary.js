@@ -38,13 +38,8 @@ const uploadImages = async () => {
         resource_type: "image",
       };
     //replace caption with description of cloudinary
-    options.context.caption = options.context.title;
-    options.context.alt = options.context.caption;
-    options.context.photographer = options.context.artist;
-    // Now delete them fro moriginal json
-    delete options.context.title;
-    delete options.context.caption;
-    delete options.context.artist;
+    //options.context.alt = options.context?.caption;
+
 
     try {
       const result = await cloudinary.uploader.upload(row.uri, options); //use "row.uri" instead of "url"
