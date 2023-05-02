@@ -1,7 +1,6 @@
 const express = require('express');
 const session = require('express-session');
 const axios = require('axios');
-const { Readable } = require('stream')
 const cron = require('node-cron');
 const app = express();
 const dayjs = require('dayjs')
@@ -15,7 +14,7 @@ app.use(session({
   secret: 'gettySecret', // You should replace this with your own secret key
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false, unset: 'destroy' } // set this to true if using HTTPS
+  cookie: { secure: true, unset: 'destroy' } // set this to true if using HTTPS
 }));
 
 
@@ -143,7 +142,7 @@ cron.schedule('*/5 * * * *', async () => {
 
 
 // start the server
-const port = 3000;
+const port = 3009;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
