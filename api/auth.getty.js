@@ -14,8 +14,7 @@ async function getBearerToken(req) {
   // If token exists in the session and hasn't expired yet, return it
   if (req.session.token && req.session.token.expiryDate > Date.now()) {
     return req.session.token.accessToken;
-  }else{
-
+  } else {
     // If token doesn't exist in the session or has expired, generate a new one
     const { data } = await axios.post(AUTH_URL, qs.stringify({
       grant_type: 'password',
@@ -38,5 +37,6 @@ async function getBearerToken(req) {
     return accessToken;
   }
 }
+
 
 module.exports = { getBearerToken };
