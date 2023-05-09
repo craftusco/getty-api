@@ -31,7 +31,7 @@ const { getBearerToken } = require("./api/auth.getty");
 app.use(async (req, res, next) => {
   req.token = await getBearerToken(req);
   /* dynamic URL */
-  global.currentUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+  //global.currentUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
   next();
 });
 
@@ -103,7 +103,7 @@ app.post("/test", async (req, res) => {
 });
 
 // start the server
-const port = 3000;
+const port = 3009;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
   startCronJobs();

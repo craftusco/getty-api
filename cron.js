@@ -4,7 +4,7 @@ const axios = require('axios');
 // Define your cron jobs
 cron.schedule('*/1 * * * *', async () => {
   try {
-    const response = await axios.get('http://localhost:3000/count');
+    const response = await axios.get('http://localhost:3000/');
     console.log(response.data);
   } catch (error) {
     console.error('Error calling count route:', error);
@@ -13,7 +13,7 @@ cron.schedule('*/1 * * * *', async () => {
 
 cron.schedule('*/2 * * * *', async () => {
   try {
-    const response = await axios.get('http://localhost:3000/sync');
+    const response = await axios.get('http://localhost:3000/upload');
     console.log(response.data);
   } catch (error) {
     console.error('Error calling sync route:', error);
