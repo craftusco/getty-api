@@ -28,7 +28,7 @@ const uploadImages = async () => {
         ? "/Getty/Dedicated photographers"
         : "/Getty/Editorial Subscriptions";
         //set parsed Object to Context Meta on CLoudinary
-        const parsedRow = JSON.parse(row.meta);
+        //const parsedRow = JSON.parse(row.meta);
       const options = {
         folder,
         overwrite: true,
