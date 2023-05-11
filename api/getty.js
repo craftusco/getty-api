@@ -133,7 +133,7 @@ const retrieveGettyUri = async (req) => {
   const axiosInstance = await instance(req);
   try {
     // Return an array of the downloaded image IDs
-    const ids = await knex('getty_downloads').select('id').where({'downloaded': false}).whereNotNull('uri').limit(50).pluck('id');
+    const ids = await knex('getty_downloads').select('id').where('downloaded', false).limit(50).pluck('id');
     //console.log(ids);
 
 
@@ -151,7 +151,7 @@ const retrieveGettyUri = async (req) => {
     
     return response.filter(image => image !== null);
   } catch (error) {
-    console.error('Error retrieving or updating data:', error.message);
+    console.error('Error retrieving URI:', error.message);
     return null;
   }
 };
@@ -163,11 +163,11 @@ const retrieveGettyMeta = async (req) => {
   const axiosInstance = await instance(req);
   try {
     // Return an array of the downloaded image IDs
-    const ids = await knex('getty_downloads').select('id').where({'downloaded': false}).whereNotNull('meta').limit(50).pluck('id');
+    const ids = await knex('getty_downloads').select('id').where('downloaded', false).limit(50).pluck('id');
     
     /* Concat IDs */
     const idString = ids.join(',');
-    //console.log(ids);
+    console.log(ids);
     //console.log(idString);
     
     // Retrieve Metadata for the images
@@ -176,7 +176,7 @@ const retrieveGettyMeta = async (req) => {
     // Update Metadata in the database for each image
     await Promise.all(response.data.images.map(async image => {
       try {
-        await knex('getty_downloads').where('id', image.id).update({ Meta: JSON.stringify(image) });
+        await knex('getty_downloads').where('id', image.id).update({ meta: JSON.stringify(image) });
       } catch (error) {
         console.error(`Error updating Metadata for image ID ${image.id}:`, error.message);
       }
@@ -184,7 +184,7 @@ const retrieveGettyMeta = async (req) => {
     
     return response.data;
   } catch (error) {
-    console.error('Error retrieving or updating data:', error.message);
+    console.error('Error retrieving META:', error.message);
     return null;
   }
 };
