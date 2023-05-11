@@ -81,7 +81,7 @@ const retrieveGettyImagesData = async (req) => {
   
   while (true) {
     const params = {
-      date_from: '2023-01-01', //dayjs().startOf('day').format('YYYY-MM-DD'),
+      date_from: '2018-01-01', //dayjs().startOf('day').format('YYYY-MM-DD'),
       page_size: pageSize,
       page: pageNumber
     };
