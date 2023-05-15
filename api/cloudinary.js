@@ -25,8 +25,8 @@ const uploadImages = async () => {
     //use "row" instead of "url" to represent each row
     const folder =
       row.product_id === "easyaccess"
-        ? "/Getty/Dedicated photographers"
-        : "/Getty/Editorial Subscriptions";
+        ? "c39a0e23630947bbce08d6a5cb47129e37"
+        : "c39a0e0eb80946a28ee767fa21a5961032";
         //set parsed Object to Context Meta on CLoudinary
         //const parsedRow = JSON.parse(row.meta);
       const options = {
